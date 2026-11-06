@@ -20,7 +20,7 @@ CSV fleet and inspection reports can also be transferred, but the full JSON back
 
 ## Hosting
 
-The project is published as a public GitHub Pages site at `https://ishalommensah-crypto.github.io/extinguisher-tracker/`. The app source is public. Extinguisher records are not uploaded by the app; they stay in each browser's local storage. Data in backup files may contain asset IDs, locations, and inspection details, so share those files only through a trusted channel.
+GitHub Pages is configured to publish this repository's root from the `main` branch. The expected URL is `https://ishalommensah-crypto.github.io/extinguisher-tracker/`, but that URL returned 404 on the last check, so hosting is not yet confirmed live. The app source is public. Extinguisher records are not uploaded by the app; they stay in each browser's local storage. Data in backup files may contain asset IDs, locations, and inspection details, so share those files only through a trusted channel.
 
 ## Later shared edition (optional)
 
@@ -31,4 +31,5 @@ Shared team sync is off in this edition. Re-enabling it requires Firebase projec
 - The configurable checklist is a general starting point, not a replacement for your jurisdiction's required inspection standard. Have the responsible fire-safety professional approve it.
 - The app does not upload inspection photos or run OCR. Transcribe paper/photo entries and review matches before importing.
 - QR/barcode, spreadsheet, and font libraries load from public CDNs, so the browser needs internet access.
+
 
