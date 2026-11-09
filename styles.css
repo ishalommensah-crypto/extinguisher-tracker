@@ -2,3 +2,41 @@
 @media(max-width:950px){.sidebar{width:210px}.content{padding:28px 22px}.topbar{padding:0 22px}.dashboard-grid{grid-template-columns:1fr}.metric-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:680px){.sidebar{width:58px;padding:16px 7px}.brand{padding:0 6px 20px}.brand>div:nth-child(2),.workspace-chip>div:not(.workspace-icon),.workspace-chip .chevron,.nav-caption,.nav-item:not(.active){display:none}.workspace-chip{padding:6px;justify-content:center}.nav-item{justify-content:center;padding:11px 5px;font-size:0}.nav-item>span{font-size:17px}.nav-item b,.help-card,.user-meta,.user-row>button{display:none}.user-row{justify-content:center}.topbar{padding:0 13px;height:52px}.sync-state{font-size:0}.sync-state i{width:8px;height:8px}.content{padding:23px 13px}.page-heading{align-items:flex-start;gap:12px;flex-direction:column}.page-heading h1{font-size:24px}.metric-grid{gap:8px}.metric-card{padding:12px;min-height:92px}.metric-value{font-size:22px}.quick-actions{flex-direction:column}.report-grid,.settings-grid,.field-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.toolbar{align-items:flex-start;flex-direction:column}.filter-group{width:100%}.search-box{width:100%}.filter-group select{flex:1}.checkbox-grid{grid-template-columns:1fr}.inspection-card{gap:8px;padding:10px}.inspection-info p{max-width:160px;white-space:normal}.breadcrumbs{font-size:10px}}
 @media print{body{background:#fff}.sidebar,.topbar,.page-heading .button,.toolbar,.hide-print{display:none!important}.main-area{width:100%}.content{padding:0;max-width:none}.panel,.metric-card{break-inside:avoid}.page-heading{margin-bottom:10px}}
 
+
+/* QR and barcode labels */
+.label-sheet{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start}
+.label-print{display:grid;grid-template-columns:135px minmax(0,1fr);gap:12px;align-items:center;width:min(560px,100%);min-height:220px;box-sizing:border-box;padding:14px;border:1px dashed #aab4a8;border-radius:8px;background:#fff;color:#18251d}
+.label-code{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0}
+.label-code .qr-box{display:grid;place-items:center;width:116px;height:116px;padding:4px;box-sizing:border-box;border:1px solid #e1e5e0;background:#fff}
+.label-code .qr-code canvas,.label-code .qr-code img{display:block;width:106px!important;height:106px!important}
+.label-code .barcode{display:block;width:100%;height:50px}
+.label-info{min-width:0;line-height:1.35}
+.label-brand{font-size:8px;font-weight:700;letter-spacing:1.2px;color:#547258}
+.label-asset-id{display:block;margin:4px 0;font:800 22px/1.1 Arial,sans-serif;letter-spacing:.3px;overflow-wrap:anywhere}
+.label-name{font-size:13px;font-weight:700}
+.label-meta,.label-location{font-size:10px;color:#4d574e;margin-top:3px}
+.label-instruction{font-size:9px;color:#6f786e;margin-top:8px}
+.code-error{font-size:8px;color:#b94e42}
+#labelGeneratorStatus{margin-top:12px}
+@media(max-width:680px){.label-sheet{grid-template-columns:1fr}.label-print{width:100%;grid-template-columns:120px minmax(0,1fr)}}
+@page{size:A4;margin:7mm}
+@media print{
+  body{background:#fff!important}
+  #appShell,#toast{display:none!important}
+  #modalRoot{display:block!important}
+  .modal-backdrop{position:static!important;display:block!important;inset:auto!important;padding:0!important;background:#fff!important}
+  .modal{width:auto!important;max-width:none!important;max-height:none!important;overflow:visible!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+  .modal-head,.modal-foot,.modal-close,#labelGeneratorStatus{display:none!important}
+  .modal-body{padding:0!important}
+  .single-label .label-print{margin:0}
+  .label-sheet{grid-template-columns:repeat(2,85mm);gap:4mm;align-items:start}
+  .label-print{width:85mm;height:54mm;min-height:54mm;box-sizing:border-box;grid-template-columns:30mm 1fr;gap:3mm;padding:3mm;border:0.35mm dashed #777;border-radius:0;break-inside:avoid;page-break-inside:avoid}
+  .label-code .qr-box{width:28mm;height:28mm;padding:1mm}
+  .label-code .qr-code canvas,.label-code .qr-code img{width:25mm!important;height:25mm!important}
+  .label-code .barcode{width:29mm;height:13mm}
+  .label-brand{font-size:6.5pt}
+  .label-asset-id{font-size:12pt;margin:1mm 0}
+  .label-name{font-size:8pt}
+  .label-meta,.label-location{font-size:7pt;margin-top:1mm}
+  .label-instruction{font-size:6.5pt;margin-top:2mm}
+}
