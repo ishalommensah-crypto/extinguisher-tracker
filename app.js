@@ -110,29 +110,51 @@ function bindLabelPrintButtons(){
   const root=$('#modalRoot');
   root.querySelectorAll('[data-print-labels]').forEach(button=>{
     button.onclick=()=>{
-      root.querySelector('#cardPrintStyle')?.remove();
-      if(button.hasAttribute('data-card-print')){
-        const style=document.createElement('style');
-        style.id='cardPrintStyle';
-        style.textContent=`
-          @page { size: 85.725mm 53.975mm; margin: 0; }
-          @media print {
-            #modalRoot .label-sheet { display: block; }
-            #modalRoot .label-print {
-              width: 85mm; height: 53mm; min-height: 53mm;
-              border: 0; overflow: hidden;
-            }
-            #modalRoot .label-print:not(:last-child) { break-after: page; }
-          }`;
-        root.append(style);
-        window.addEventListener('afterprint',()=>style.remove(),{once:true});
+      if(!button.hasAttribute('data-card-print')){
+        window.print();
+        return;
       }
-      window.print();
+      const view=window.open('','_blank');
+      if(!view){
+        toast('Allow pop-ups for this site, then open the card print view again.');
+        return;
+      }
+      const cards=[...root.querySelectorAll('.label-print')].map(card=>{
+        const copy=card.cloneNode(true);
+        const canvases=card.querySelectorAll('canvas');
+        copy.querySelectorAll('canvas').forEach((canvas,index)=>{
+          const image=document.createElement('img');
+          image.alt='QR code';
+          image.src=canvases[index].toDataURL();
+          canvas.replaceWith(image);
+        });
+        return copy.outerHTML;
+      }).join('');
+      const stylesheet=esc(new URL('styles.css',location.href).href);
+      view.document.open();
+      view.document.write(`<!doctype html><html lang="en"><meta charset="utf-8"><title>Extinguisher cards</title>
+        <link rel="stylesheet" href="${stylesheet}">
+        <style>
+          @page { size: 85.725mm 53.975mm; margin: 0; }
+          .card-print-help { padding: 12px; }
+          @media print {
+            .card-print-help { display: none; }
+            #modalRoot .label-print { width: 85mm; height: 53mm; min-height: 53mm; border: 0; overflow: hidden; }
+            #modalRoot .label-print:not(:last-child) { break-after: page; }
+          }
+        </style>
+        <div class="card-print-help"><button id="printCards" disabled>Print / Save as PDF</button>
+        Select Zebra ZC300 and CR80 landscape in the print dialog.</div>
+        <main id="modalRoot">${cards}</main></html>`);
+      const printButton=view.document.getElementById('printCards');
+      view.addEventListener('load',()=>{printButton.disabled=false},{once:true});
+      printButton.onclick=()=>view.print();
+      view.document.close();
     };
   });
 }
-function openLabel(a){if(!a){toast('Asset not found');return}modal('Print extinguisher label',a.id+' · '+(a.name||''),'<div class="single-label">'+labelMarkup(a)+'</div><p id="labelGeneratorStatus" class="import-note">Generating QR and barcode…</p>','<button class="button" data-close>Close</button><button class="button" data-print-labels>Print on A4</button><button class="button primary" data-print-labels data-card-print>Print CR80 cards</button>');fillLabelCodes($('#modalRoot'));bindLabelPrintButtons();$('#modalRoot').querySelectorAll('[data-close]').forEach(x=>x.onclick=closeModal)}
-function printLabelRecords(records,title){modal(title,records.length+' labels · print, cut, and attach to the selected extinguisher'+(records.length===1?'':'s')+'.','<div class="label-sheet">'+records.map(labelMarkup).join('')+'</div><p id="labelGeneratorStatus" class="import-note">Generating QR codes and barcodes for '+records.length+' extinguishers…</p>','<button class="button" data-close>Close</button><button class="button" data-print-labels>Print on A4</button><button class="button primary" data-print-labels data-card-print>Print CR80 cards</button>',true);fillLabelCodes($('#modalRoot'));bindLabelPrintButtons();$('#modalRoot').querySelectorAll('[data-close]').forEach(x=>x.onclick=closeModal)}
+function openLabel(a){if(!a){toast('Asset not found');return}modal('Print extinguisher label',a.id+' · '+(a.name||''),'<div class="single-label">'+labelMarkup(a)+'</div><p id="labelGeneratorStatus" class="import-note">Generating QR and barcode…</p>','<button class="button" data-close>Close</button><button class="button" data-print-labels>Print on A4</button><button class="button primary" data-print-labels data-card-print>Open CR80 print view</button>');fillLabelCodes($('#modalRoot'));bindLabelPrintButtons();$('#modalRoot').querySelectorAll('[data-close]').forEach(x=>x.onclick=closeModal)}
+function printLabelRecords(records,title){modal(title,records.length+' labels · print, cut, and attach to the selected extinguisher'+(records.length===1?'':'s')+'.','<div class="label-sheet">'+records.map(labelMarkup).join('')+'</div><p id="labelGeneratorStatus" class="import-note">Generating QR codes and barcodes for '+records.length+' extinguishers…</p>','<button class="button" data-close>Close</button><button class="button" data-print-labels>Print on A4</button><button class="button primary" data-print-labels data-card-print>Open CR80 print view</button>',true);fillLabelCodes($('#modalRoot'));bindLabelPrintButtons();$('#modalRoot').querySelectorAll('[data-close]').forEach(x=>x.onclick=closeModal)}
 function printSelectedLabels(){const selected=fleet.filter(a=>selectedLabelIds.has(a.id));if(!selected.length){toast('Select at least one extinguisher label first.');return}printLabelRecords(selected,`Print selected labels (${selected.length})`)}
 function printFleetLabels(){if(!fleet.length){toast('Add or import extinguishers before printing labels.');return}printLabelRecords(fleet,'Print all extinguisher labels')}
 function exportCSV(rows,filename){if(!rows.length){toast('No records to export.');return}const keys=[...new Set(rows.flatMap(r=>Object.keys(r).filter(k=>!k.startsWith('_')&&k!=='updatedAt')))];const cell=v=>`"${String(Array.isArray(v)?JSON.stringify(v):v??'').replaceAll('"','""')}"`;const csv=[keys.join(','),...rows.map(r=>keys.map(k=>cell(r[k])).join(','))].join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download=filename;a.click();URL.revokeObjectURL(a.href);toast('CSV downloaded.')}
